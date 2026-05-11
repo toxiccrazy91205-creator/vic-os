@@ -120,7 +120,28 @@ REST_FRAMEWORK = {
 CORS_ALLOW_ALL_ORIGINS = DEBUG
 
 # CSRF
-CSRF_TRUSTED_ORIGINS = [f"https://{host}" for host in ALLOWED_HOSTS if host.endswith('.render.com')]
+CSRF_TRUSTED_ORIGINS = [
+    "https://*.onrender.com",
+    "https://vic-os.onrender.com",
+]
+
 if DEBUG:
-    CSRF_TRUSTED_ORIGINS.append('http://localhost:8000')
-    CSRF_TRUSTED_ORIGINS.append('http://127.0.0.1:8000')
+    CSRF_TRUSTED_ORIGINS += [
+        "http://localhost:8000",
+        "http://127.0.0.1:8000",
+    ]
+else:
+    # In production, if ALLOWED_HOSTS is set, add them to trusted origins
+    for host in ALLOWED_HOSTS:
+        if host != '*':
+            if not host.startswith('http'):
+                CSRF_TRUSTED_ORIGINS.append(f"https://{host}")
+            else:
+                CSRF_TRUSTED_ORIGINS.append(host)
+
+# Security settings for production
+if not DEBUG:
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+    CSRF_COOKIE_SECURE = True
+    SESSION_COOKIE_SECURE = True
+    SECURE_SSL_REDIRECT = True
