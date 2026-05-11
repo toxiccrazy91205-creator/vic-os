@@ -37,10 +37,15 @@ A production-ready Django web application for remote monitoring and interaction 
 
 ## ☁️ Deployment (Render)
 
-1. Connect your GitHub repository to Render.
-2. Render will automatically detect `render.yaml`.
-3. The build process uses `scripts/build.sh`.
-4. The start command uses `daphne` for ASGI/WebSocket support.
+1. **Create a New Web Service** on Render.
+2. **Connect your GitHub Repository**.
+3. **Select "Docker"** as the runtime (Render will automatically find the `Dockerfile`).
+4. **Environment Variables**:
+   - `SECRET_KEY`: (generate one)
+   - `ALLOWED_HOSTS`: `.render.com`
+   - `DEBUG`: `False`
+   - `DATABASE_URL`: (from your Render Postgres instance)
+5. **Render will build and deploy** the container automatically.
 
 ## 🔧 Diagnostics
 Access `/diagnostics/` after logging in to verify:
