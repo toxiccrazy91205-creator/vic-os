@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="flex items-center justify-center min-h-[70vh]">
+    <div class="glass p-8 rounded-lg neon-border w-full max-w-md">
+        <div class="text-center mb-8">
+            <h2 class="text-2xl font-bold text-cyber-blue tracking-[0.3em] mb-2">VIC-OS</h2>
+            <p class="text-[10px] text-gray-500 tracking-widest uppercase">Restricted Access Terminal</p>
+        </div>
+
+        {% if messages %}
+        <div class="mb-4">
+            {% for message in messages %}
+            <div class="text-xs p-2 bg-red-500/20 border border-red-500/50 text-red-200">
+                {{ message }}
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <form method="post" class="space-y-6">
+            {% csrf_token %}
+            <div>
+                <label class="block text-[10px] text-cyber-blue mb-1">OPERATOR_ID</label>
+                <input type="text" name="username" class="w-full bg-black/40 border border-cyber-blue/30 p-2 outline-none text-white focus:border-cyber-blue transition-colors font-mono" required placeholder="admin">
+            </div>
+            <div>
+                <label class="block text-[10px] text-cyber-blue mb-1">ACCESS_CODE</label>
+                <input type="password" name="password" class="w-full bg-black/40 border border-cyber-blue/30 p-2 outline-none text-white focus:border-cyber-blue transition-colors font-mono" required placeholder="********">
+            </div>
+            <button type="submit" class="w-full bg-cyber-blue/10 border border-cyber-blue text-cyber-blue p-3 hover:bg-cyber-blue hover:text-black transition-all font-bold tracking-widest text-sm cyber-btn">
+                ESTABLISH CONNECTION
+            </button>
+        </form>
+
+        <div class="mt-8 text-center">
+            <p class="text-[8px] text-gray-600">WARNING: UNAUTHORIZED ACCESS ATTEMPTS ARE LOGGED AND TRACED BY KERNEL_WATCHDOG</p>
+        </div>
+    </div>
+</div>
+{% endblock %}

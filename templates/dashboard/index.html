@@ -1,0 +1,177 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+    <!-- System Status Cards -->
+    <div class="glass p-6 rounded-lg neon-border">
+        <h3 class="text-xs text-cyber-blue mb-2 tracking-widest">CPU LOAD</h3>
+        <div class="flex items-end justify-between">
+            <span id="cpu-value" class="text-4xl font-bold text-white">0%</span>
+            <div class="w-24 bg-cyber-dark h-2 rounded-full overflow-hidden border border-cyber-blue/20">
+                <div id="cpu-bar" class="bg-cyber-blue h-full" style="width: 0%"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="glass p-6 rounded-lg neon-border">
+        <h3 class="text-xs text-cyber-purple mb-2 tracking-widest">RAM USAGE</h3>
+        <div class="flex items-end justify-between">
+            <span id="ram-value" class="text-4xl font-bold text-white">0%</span>
+            <div class="w-24 bg-cyber-dark h-2 rounded-full overflow-hidden border border-cyber-purple/20">
+                <div id="ram-bar" class="bg-cyber-purple h-full" style="width: 0%"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="glass p-6 rounded-lg neon-border">
+        <h3 class="text-xs text-cyber-pink mb-2 tracking-widest">DISK SPACE</h3>
+        <div class="flex items-end justify-between">
+            <span id="storage-value" class="text-4xl font-bold text-white">0%</span>
+            <div class="w-24 bg-cyber-dark h-2 rounded-full overflow-hidden border border-cyber-pink/20">
+                <div id="storage-bar" class="bg-cyber-pink h-full" style="width: 0%"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="glass p-6 rounded-lg neon-border flex flex-col justify-center items-center">
+        <div class="text-[10px] text-cyber-blue mb-1">UPTIME</div>
+        <div id="uptime" class="text-xl font-mono text-white">00:00:00</div>
+    </div>
+
+    <!-- Main Console / Terminal -->
+    <div class="md:col-span-3 glass p-4 rounded-lg min-h-[400px] flex flex-col">
+        <div class="flex items-center justify-between mb-4 border-b border-white/10 pb-2">
+            <span class="text-xs font-mono text-cyber-blue">system@vic-os:~# live_logs</span>
+            <div class="flex space-x-2">
+                <div class="w-3 h-3 rounded-full bg-red-500/50"></div>
+                <div class="w-3 h-3 rounded-full bg-yellow-500/50"></div>
+                <div class="w-3 h-3 rounded-full bg-green-500/50"></div>
+            </div>
+        </div>
+        <div id="terminal" class="flex-grow font-mono text-sm overflow-y-auto max-h-[350px] space-y-1 custom-scrollbar">
+            <div class="text-cyber-blue/80">[INIT] Initializing WebSocket handshake...</div>
+            <div class="text-green-400">[OK] Secure tunnel established.</div>
+            <div class="text-white/50">Welcome to vic-os remote management console.</div>
+        </div>
+        <div class="mt-4 flex">
+            <input type="text" id="cmd-input" class="bg-transparent border-b border-cyber-blue/30 flex-grow outline-none font-mono text-sm text-cyber-blue px-2 py-1" placeholder="Type command...">
+            <button id="send-btn" class="ml-2 text-xs border border-cyber-blue/50 px-4 py-1 hover:bg-cyber-blue/10 transition-colors">EXEC</button>
+        </div>
+    </div>
+
+    <!-- Right Sidebar Controls -->
+    <div class="glass p-6 rounded-lg flex flex-col space-y-6">
+        <div>
+            <h3 class="text-xs text-cyber-blue mb-4 tracking-widest border-b border-cyber-blue/20 pb-2">SERVICE CONTROLS</h3>
+            <div class="space-y-2">
+                <button class="w-full text-left p-2 text-xs border border-white/10 hover:border-cyber-blue/50 hover:bg-cyber-blue/5 transition-all flex items-center">
+                    <span class="w-2 h-2 rounded-full bg-green-500 mr-2 animate-pulse"></span>
+                    KERNEL_DAEMON.EXE
+                </button>
+                <button class="w-full text-left p-2 text-xs border border-white/10 hover:border-cyber-pink/50 hover:bg-cyber-pink/5 transition-all flex items-center">
+                    <span class="w-2 h-2 rounded-full bg-red-500 mr-2"></span>
+                    LOG_AGGREGATOR
+                </button>
+                <button class="w-full text-left p-2 text-xs border border-white/10 hover:border-cyber-purple/50 hover:bg-cyber-purple/5 transition-all flex items-center">
+                    <span class="w-2 h-2 rounded-full bg-yellow-500 mr-2"></span>
+                    NETWORK_STACK
+                </button>
+            </div>
+        </div>
+
+        <div>
+            <h3 class="text-xs text-cyber-blue mb-4 tracking-widest border-b border-cyber-blue/20 pb-2">QUICK ACTIONS</h3>
+            <div class="grid grid-cols-2 gap-2">
+                <button class="p-2 border border-white/10 hover:bg-white/5 text-[10px]">REBOOT</button>
+                <button class="p-2 border border-white/10 hover:bg-white/5 text-[10px]">FLUSH_CACH</button>
+                <button class="p-2 border border-white/10 hover:bg-white/5 text-[10px]">SYNC_OSTREE</button>
+                <button class="p-2 border border-white/10 hover:bg-white/5 text-[10px]">SCAN_VULN</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+    .custom-scrollbar::-webkit-scrollbar-track { background: rgba(0,0,0,0.1); }
+    .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(0, 242, 255, 0.2); }
+</style>
+
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    const systemSocket = new WebSocket(
+        (window.location.protocol === 'https:' ? 'wss://' : 'ws://') + 
+        window.location.host + '/ws/system/'
+    );
+
+    const logSocket = new WebSocket(
+        (window.location.protocol === 'https:' ? 'wss://' : 'ws://') + 
+        window.location.host + '/ws/logs/'
+    );
+
+    systemSocket.onmessage = function(e) {
+        const data = JSON.parse(e.data);
+        if (data.type === 'system_metrics') {
+            updateMetric('cpu', data.cpu);
+            updateMetric('ram', data.ram);
+            updateMetric('storage', data.storage);
+        }
+    };
+
+    function updateMetric(id, value) {
+        document.getElementById(`${id}-value`).textContent = `${Math.round(value)}%`;
+        document.getElementById(`${id}-bar`).style.width = `${value}%`;
+        
+        // Color shifts
+        const bar = document.getElementById(`${id}-bar`);
+        if (value > 80) bar.className = 'bg-red-500 h-full';
+        else if (value > 60) bar.className = 'bg-yellow-500 h-full';
+        else bar.className = (id === 'cpu' ? 'bg-cyber-blue' : (id === 'ram' ? 'bg-cyber-purple' : 'bg-cyber-pink')) + ' h-full';
+    }
+
+    logSocket.onmessage = function(e) {
+        const data = JSON.parse(e.data);
+        const terminal = document.getElementById('terminal');
+        const line = document.createElement('div');
+        line.className = 'text-white/70 border-l border-white/10 pl-2';
+        line.innerHTML = `<span class="text-[10px] text-cyber-blue/50">[${new Date().toLocaleTimeString()}]</span> ${data.message || data.type}`;
+        terminal.appendChild(line);
+        terminal.scrollTop = terminal.scrollHeight;
+    };
+
+    // Command Input
+    document.getElementById('cmd-input').addEventListener('keypress', function (e) {
+        if (e.key === 'Enter') executeCommand();
+    });
+    document.getElementById('send-btn').addEventListener('click', executeCommand);
+
+    function executeCommand() {
+        const input = document.getElementById('cmd-input');
+        const cmd = input.value.trim();
+        if (cmd) {
+            logSocket.send(json.stringify({ 'message': cmd }));
+            input.value = '';
+        }
+    }
+
+    // Uptime simulation
+    let seconds = 0;
+    setInterval(() => {
+        seconds++;
+        const h = Math.floor(seconds / 3600).toString().padStart(2, '0');
+        const m = Math.floor((seconds % 3600) / 60).toString().padStart(2, '0');
+        const s = (seconds % 60).toString().padStart(2, '0');
+        document.getElementById('uptime').textContent = `${h}:${m}:${s}`;
+    }, 1000);
+
+    // Initial API fetch
+    fetch('/api/status/')
+        .then(res => res.json())
+        .then(data => {
+            document.getElementById('uptime').textContent = data.uptime;
+            // parse uptime to seconds if needed
+        });
+</script>
+{% endblock %}
