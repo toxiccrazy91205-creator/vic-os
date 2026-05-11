@@ -25,6 +25,9 @@ RUN pip install --upgrade pip && \
 # Copy project
 COPY . /app/
 
+# Make start script executable
+RUN chmod +x /app/start.sh
+
 # Create static directory if it doesn't exist
 RUN mkdir -p /app/static /app/staticfiles
 
@@ -34,5 +37,5 @@ RUN python manage.py collectstatic --noinput
 # Expose port
 EXPOSE 8000
 
-# Start command (using Daphne for WebSockets)
-CMD daphne -b 0.0.0.0 -p $PORT vic_os_project.asgi:application
+# Start command
+CMD ["/app/start.sh"]
