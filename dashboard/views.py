@@ -19,11 +19,14 @@ class LoginView(View):
         # Simplistic login for demo/setup
         username = request.POST.get('username')
         password = request.POST.get('password')
+        print(f"Login attempt for: {username}")
         user = authenticate(request, username=username, password=password)
         if user is not None:
+            print(f"Login successful for: {username}")
             login(request, user)
             return redirect('dashboard')
         else:
+            print(f"Login failed for: {username}")
             messages.error(request, "Invalid credentials")
             return render(request, 'dashboard/login.html')
 

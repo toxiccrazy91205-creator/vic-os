@@ -18,3 +18,5 @@ else:
     u.set_password(password)
     u.save()
     print(f"Superuser {username} password updated.")
+
+print(f"Total users in database: {User.objects.count()}")
