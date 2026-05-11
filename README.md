@@ -37,15 +37,15 @@ A production-ready Django web application for remote monitoring and interaction 
 
 ## ☁️ Deployment (Render)
 
+This project is configured for **Zero-Config Deployment**. You don't need to set any environment variables manually.
+
 1. **Create a New Web Service** on Render.
 2. **Connect your GitHub Repository**.
-3. **Select "Docker"** as the runtime (Render will automatically find the `Dockerfile`).
-4. **Environment Variables**:
-   - `SECRET_KEY`: (generate one)
-   - `ALLOWED_HOSTS`: `.render.com`
-   - `DEBUG`: `False`
-   - `DATABASE_URL`: (from your Render Postgres instance)
-5. **Render will build and deploy** the container automatically.
+3. **Select "Docker"** as the runtime.
+4. **Deploy**. The project will use an internal SQLite database by default.
+
+> [!NOTE]
+> Since Render's file system is ephemeral, data in the SQLite database will be reset on every deployment. For persistent storage, you can later connect a PostgreSQL database by simply adding the `DATABASE_URL` environment variable.
 
 ## 🔧 Diagnostics
 Access `/diagnostics/` after logging in to verify:
