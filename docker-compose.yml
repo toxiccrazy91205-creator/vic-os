@@ -9,4 +9,5 @@ services:
       - .:/app
     environment:
       - DEBUG=True
+      - DJANGO_SETTINGS_MODULE=vic_os_project.settings
     command: daphne -b 0.0.0.0 -p 8000 vic_os_project.asgi:application

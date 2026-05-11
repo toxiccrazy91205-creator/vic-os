@@ -4,7 +4,7 @@ from channels.routing import ProtocolTypeRouter, URLRouter
 from channels.auth import AuthMiddlewareStack
 import realtime.routing
 
-os.environ.setdefault('django_settings_module', 'vic_os_project.settings')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'vic_os_project.settings')
 
 application = ProtocolTypeRouter({
     "http": get_asgi_application(),
